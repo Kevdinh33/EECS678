@@ -24,17 +24,28 @@ int main(int argc,char* argv[]) {
     // Create a pipe,fork, and call the function. The child will write the returned
     // value(number of files) to the parent. Parent should read it and wait for child
     // to finish.
-    pid_t ret;
-    ret = fork();
-    switch (ret) {
-      case -1:
-        perror("fork");
-        exit(1);
-      case 0:
-        exit(0);
-      default:
-        wait(0);
-    }
+  int fds[2];
+	pipe(fds);
+	pid_t process_id;
+	process_id = fork();
+
+	switch(process_id)
+	{
+		case -1:
+			perror("fork");
+			exit(1);
+		case 0:
+			close(fds[0]);
+			numOfFiles = getNumOfFilesRec(argv[1]);
+			write(fds[1], &numOfFiles, sizeof(numOfFiles));
+			close(fds[1]);
+			exit(0);
+		default:
+			close(fds[1]);
+			read(fds[0], &numOfFiles, sizeof(numOfFiles));
+			wait(0);
+
+	}
 
 
 #else
@@ -59,6 +70,8 @@ int getNumOfFilesRec(char path[PATH_MAX]){
 #ifdef LAB_CODE
     // Create a pipe for all children. No need to create an external
     // pipe for each children.
+    int fds[2];
+	  pipe(fds);
 
 #endif
 
@@ -89,6 +102,24 @@ int getNumOfFilesRec(char path[PATH_MAX]){
             // Create a child process to get into the directory
             // to count files. Write the returned number of files
             // to parent via pipe
+      pid_t process_id;
+			process_id = fork();
+			int returnValue;
+
+			switch(process_id)
+			{
+				case -1:
+					perror("fork");
+					exit(1);
+				case 0:
+					close(fds[0]);
+					returnValue = getNumOfFilesRec(targetPath);
+					write(fds[1], &returnValue, sizeof(returnValue));
+					close(fds[1]);
+					exit(0);
+				default:
+					break;
+			}
 
 #else
             int returnVal = getNumOfFilesRec(targetPath);
@@ -110,6 +141,14 @@ int getNumOfFilesRec(char path[PATH_MAX]){
 #ifdef LAB_CODE
     // read the number of files integer coming from children and
     // wait all of them to finish execution
+  close(fds[1]);
+	int returnValue;
+
+	while(read(fds[0], &returnValue, sizeof(returnValue)) >= 1){
+		numOfFiles = numOfFiles + returnValue;
+  }
+	wait(0);
+	goto finish;
 
 #endif
 
