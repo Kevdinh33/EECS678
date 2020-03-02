@@ -35,7 +35,7 @@ void check_count(){
 
     /* Prompt the user to tell us if to really exit or not - if user hasn't responded in 5 seconds, "kill" the program */
     //Your code
-    alarm(3);
+    alarm(5);
     printf("\nReally exit? [Y/n]: ");
     fflush(stdout);
     fgets(answer, sizeof(answer), stdin);
@@ -74,7 +74,7 @@ void catch_int(int sig_num)
   else if(ctrl_z_pressed == true && ctrl_c_pressed == false)
   {
     ctrl_c_ctrl_z_count++;
-    printf("\nThe current count: '%d'\n", ctrl_c_ctrl_z_count);
+    printf(" - The current count: '%d'\n", ctrl_c_ctrl_z_count);
     ctrl_z_pressed = false;
     ctrl_c_pressed = false;
   }
@@ -107,7 +107,7 @@ void catch_tstp(int sig_num)
     ctrl_c_pressed = false;
     ctrl_z_pressed = false;
     ctrl_c_ctrl_z_count++;
-    printf("\nThe current count: '%d'\n", ctrl_c_ctrl_z_count);
+    printf(" - The current count: '%d'\n", ctrl_c_ctrl_z_count);
   }
   else
   {
