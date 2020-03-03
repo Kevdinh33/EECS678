@@ -134,9 +134,6 @@ int main(int argc, char* argv[])
   sigfillset(&mask_set);
   sa.sa_mask = mask_set;
   sa.sa_flags = 0;
-  while(1){
-  /* set signal handlers */
-  //Your code
   sigdelset(&mask_set, SIGALRM);
   sa.sa_mask = mask_set;
 
@@ -148,7 +145,6 @@ int main(int argc, char* argv[])
 
   sa.sa_handler = alarm_handler;
   sigaction(SIGALRM, &sa, NULL);
-  }
 
   return 0;
 }
